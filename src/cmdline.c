@@ -46,6 +46,7 @@
 #else /* G_OS_WIN32 */
 #define USER_CONFIG_FILE_LOCATION1	".mpdconf"
 #define USER_CONFIG_FILE_LOCATION2	".mpd/mpd.conf"
+#define USER_CONFIG_FILE_LOCATION3	".config/mpd/config"
 #endif
 
 static GQuark
@@ -203,14 +204,19 @@ parse_cmdline(int argc, char **argv, struct options *options,
 		}
 #else /* G_OS_WIN32 */
 		char *path2;
+    char *path3;
 		path1 = g_build_filename(g_get_home_dir(),
 					USER_CONFIG_FILE_LOCATION1, NULL);
 		path2 = g_build_filename(g_get_home_dir(),
 					USER_CONFIG_FILE_LOCATION2, NULL);
+		path3 = g_build_filename(g_get_home_dir(),
+					USER_CONFIG_FILE_LOCATION3, NULL);
 		if (g_file_test(path1, G_FILE_TEST_IS_REGULAR))
 			ret = config_read_file(path1, error_r);
 		else if (g_file_test(path2, G_FILE_TEST_IS_REGULAR))
 			ret = config_read_file(path2, error_r);
+		else if (g_file_test(path3, G_FILE_TEST_IS_REGULAR))
+			ret = config_read_file(path3, error_r);
 		else if (g_file_test(SYSTEM_CONFIG_FILE_LOCATION,
 				     G_FILE_TEST_IS_REGULAR))
 			ret = config_read_file(SYSTEM_CONFIG_FILE_LOCATION,
@@ -220,6 +226,7 @@ parse_cmdline(int argc, char **argv, struct options *options,
 		g_free(path1);
 #ifndef G_OS_WIN32
 		g_free(path2);
+		g_free(path3);
 #endif
 
 		return ret;
